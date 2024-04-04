@@ -1,0 +1,18 @@
+ActiveMQInfo queue1 = new ActiveMQInfo();
+queue1.setQueueName("Queue1");
+queue1.setConsumerCount(5);
+queue1.setMessageCount(100);
+
+ActiveMQInfo queue2 = new ActiveMQInfo();
+queue2.setQueueName("Queue2");
+queue2.setConsumerCount(3);
+queue2.setMessageCount(50);
+
+activeMQInfos.add(queue1);
+activeMQInfos.add(queue2);
+
+
+| Queue Name | Consumer Count | Message Count |
+|------------|----------------|---------------|
+| Queue1     | 5              | 100           |
+| Queue2     | 3              | 50            |
