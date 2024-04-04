@@ -1,0 +1,56 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class ActiveMQInfoServiceImpl implements ActiveMQInfoService {
+
+    @Autowired
+    private ActiveMQInfoRepository activeMQInfoRepository;
+
+    @Override
+    public List<ActiveMQInfo> getAllActiveMQInfo() {
+        List<ActiveMQInfo> activeMQInfos = new ArrayList<>();
+
+        // Jolokia를 사용하여 ActiveMQ Artemis의 정보를 가져오는 로직
+        RestTemplate restTemplate = new RestTemplate();
+
+        // ActiveMQ Artemis의 Jolokia URL
+        String jolokiaUrl = "http://localhost:8161/jolokia/";
+
+        // 컨슈머 수 가져오기
+        ActiveMQInfo consumerCountInfo = fetchInfo(restTemplate, jolokiaUrl + "read/org.apache.activemq.artemis:module=Core,type=Server,attribute=ConsumerCount");
+        activeMQInfos.add(consumerCountInfo);
+
+        // 큐의 정보 가져오기
+        String queueName = "your-queue-name"; // 큐 이름 설정
+        ActiveMQInfo queueInfo = fetchInfo(restTemplate, jolokiaUrl + "read/org.apache.activemq.artemis:broker=\"localhost\",component=addresses,address=\"" + queueName + "\",subcomponent=queues,routing-type=\"anycast\",queue=\"" + queueName + "\",attribute=MessageCount");
+        activeMQInfos.add(queueInfo);
+
+        // DB에 저장 (예시)
+        activeMQInfoRepository.saveAll(activeMQInfos);
+
+        return activeMQInfos;
+    }
+
+    private ActiveMQInfo fetchInfo(RestTemplate restTemplate, String url) {
+        // 요청 정보 설정
+        RequestInfo requestInfo = new RequestInfo();
+        requestInfo.setMbean("java.lang:type=*");
+        requestInfo.setAttribute("HeapMemoryUsage");
+        requestInfo.setType("read");
+
+        // JSON 응답을 받아서 DTO에 매핑
+        String response = restTemplate.getForObject(url, String.class);
+        ActiveMQInfo activeMQInfo = new ActiveMQInfo();
+        activeMQInfo.setRequest(requestInfo);
+        activeMQInfo.setValue(response); // 실제로는 JSON 파싱하여 필요한 정보만 설정해야 함
+        activeMQInfo.setStatus(200); // 상태코드 설정 (예시)
+        activeMQInfo.setTimestamp(LocalDateTime.now());
+        return activeMQInfo;
+    }
+}
