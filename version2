@@ -1,0 +1,41 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class ActiveMQServiceImpl implements ActiveMQService {
+
+    @Override
+    public List<ActiveMQInfo> getActiveMQInfo() {
+        List<ActiveMQInfo> activeMQInfos = new ArrayList<>();
+
+        // 각 큐에 대한 Jolokia URL
+        String queue1Url = "URL_FOR_QUEUE_1";
+        String queue2Url = "URL_FOR_QUEUE_2";
+        // 추가 큐 URL에 대한 변수 추가
+        
+        // 큐 정보 가져오는 로직
+        List<ActiveMQInfo> queue1Data = fetchData(queue1Url);
+        List<ActiveMQInfo> queue2Data = fetchData(queue2Url);
+        // 추가 큐 정보 가져오는 로직 추가
+        
+        // 각 큐 정보를 하나의 리스트에 병합
+        activeMQInfos.addAll(queue1Data);
+        activeMQInfos.addAll(queue2Data);
+        // 추가 큐 정보 병합 로직 추가
+
+        return activeMQInfos;
+    }
+
+    private List<ActiveMQInfo> fetchData(String url) {
+        List<ActiveMQInfo> queueData = new ArrayList<>();
+
+        // Jolokia URL로부터 큐 정보를 가져와서 DTO에 설정
+        // REST API를 호출하여 데이터를 가져오는 로직 작성
+        
+        return queueData;
+    }
+}
