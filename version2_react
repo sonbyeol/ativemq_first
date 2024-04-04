@@ -1,0 +1,45 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function ActiveMQMonitoring() {
+  const [activeMQData, setActiveMQData] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('/activemq-info');
+      setActiveMQData(response.data);
+    } catch (error) {
+      console.error('Error fetching ActiveMQ info:', error);
+    }
+  };
+
+  return (
+    <div>
+      <h1>ActiveMQ Monitoring</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Queue Name</th>
+            <th>Consumer Count</th>
+            <th>Message Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          {activeMQData.map((item, index) => (
+            <tr key={index}>
+              <td>{item.queueName}</td>
+              <td>{item.consumerCount}</td>
+              <td>{item.messageCount}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default ActiveMQMonitoring;
